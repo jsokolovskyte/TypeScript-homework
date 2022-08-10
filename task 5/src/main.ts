@@ -234,7 +234,7 @@ console.groupCollapsed('11. Performuokite žmonių masyvą, jog kiekvieno žmoga
   type IncomeToSalary = Omit<Person, 'income'> & {
     salary?: Person['income']
   }
-  const ChangeToSalary = ({ income, ...person }: Person): PersonBritish => {
+  const ChangeToSalary = ({ income, ...person }: Person): IncomeToSalary => {
     const result: IncomeToSalary = {...person };
     if(income){
       result.salary = income
