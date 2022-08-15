@@ -225,8 +225,23 @@ console.groupEnd();
 
 console.groupCollapsed('10. Sukurkite objektą, kuriame būtų apskaičiuotas vairuojančių žmonių kiekis pagal lytį');
 {
-  // ...sprendimas ir spausdinimas
+  type SortByGender = {
+    [key in Person ['sex']]?: number
+  }
 }
+  const SortDrivingPeopleByGender = (result: SortByGender, person: Person): SortByGender => {
+    if (!person.hasCar) {
+      return result;
+    } if (!result[person.sex]) result[person.sex] = 0;
+
+    result[person.sex] = result[person.sex] as number + 1
+
+    return result;
+  };
+  const GroupedPeopleByGender: SortByGender = people.reduce(SortDrivingPeopleByGender, {});
+
+  console.log(GroupedPeopleByGender)
+
 console.groupEnd();
 
 console.groupCollapsed('11. Performuokite žmonių masyvą, jog kiekvieno žmogaus savybė "income", taptų "salary"');
@@ -249,12 +264,28 @@ console.groupEnd();
 
 console.groupCollapsed('12. Suformuokite žmonių masyvą, kuriame nebūtų lyties, vardo ir pavardės');
 {
-  // ...sprendimas ir spausdinimas
+  type RemoveNameSurnameGender = Omit<Person, 'name' | 'surname' | 'sex'>;
+
+  const createPerson = ({name, surname, sex, ...identity}: Person): RemoveNameSurnameGender => identity;
+
+  const createdPerson: RemoveNameSurnameGender[] = people.map(createPerson)
+
+  console.log(createdPerson)
 }
 console.groupEnd();
 
 console.groupCollapsed('13. Suformuokite žmonių masyvą, kuriame "name" ir "surname" savybės, būtų pakeistos "fullname" savybe');
 {
-  // ...sprendimas ir spausdinimas
+  type FullName = Omit<Person, 'name' | 'surname'> & {
+    readonly fullname: string
+  }
+
+  const createFullName = ({name, surname, ...identity}: Person): FullName => ({...identity,
+  fullname: name + ' ' + surname
+  })
+
+  const FullNamePerson: FullName[] = people.map(createFullName)
+
+  console.log(FullNamePerson)
 }
 console.groupEnd();

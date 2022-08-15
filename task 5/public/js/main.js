@@ -156,6 +156,17 @@ console.groupEnd();
 console.groupCollapsed('10. Sukurkite objektą, kuriame būtų apskaičiuotas vairuojančių žmonių kiekis pagal lytį');
 {
 }
+const SortDrivingPeopleByGender = (result, person) => {
+    if (!person.hasCar) {
+        return result;
+    }
+    if (!result[person.sex])
+        result[person.sex] = 0;
+    result[person.sex] = result[person.sex] + 1;
+    return result;
+};
+const GroupedPeopleByGender = people.reduce(SortDrivingPeopleByGender, {});
+console.log(GroupedPeopleByGender);
 console.groupEnd();
 console.groupCollapsed('11. Performuokite žmonių masyvą, jog kiekvieno žmogaus savybė "income", taptų "salary"');
 {
@@ -173,10 +184,22 @@ console.groupCollapsed('11. Performuokite žmonių masyvą, jog kiekvieno žmoga
 console.groupEnd();
 console.groupCollapsed('12. Suformuokite žmonių masyvą, kuriame nebūtų lyties, vardo ir pavardės');
 {
+    const createPerson = (_a) => {
+        var { name, surname, sex } = _a, identity = __rest(_a, ["name", "surname", "sex"]);
+        return identity;
+    };
+    const createdPerson = people.map(createPerson);
+    console.log(createdPerson);
 }
 console.groupEnd();
 console.groupCollapsed('13. Suformuokite žmonių masyvą, kuriame "name" ir "surname" savybės, būtų pakeistos "fullname" savybe');
 {
+    const createFullName = (_a) => {
+        var { name, surname } = _a, identity = __rest(_a, ["name", "surname"]);
+        return (Object.assign(Object.assign({}, identity), { fullname: name + ' ' + surname }));
+    };
+    const FullNamePerson = people.map(createFullName);
+    console.log(FullNamePerson);
 }
 console.groupEnd();
 //# sourceMappingURL=main.js.map
