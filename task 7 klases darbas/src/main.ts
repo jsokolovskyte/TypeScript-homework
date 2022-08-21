@@ -1,291 +1,132 @@
-/* eslint-disable no-lone-blocks */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable no-console */
 /* eslint-disable no-inner-declarations */
-type Person = {
-  readonly name: string,
-  readonly surname: string,
-  readonly sex: 'male' | 'female',
-  age: number,
-  income?: number,
-  married?: boolean,
-  hasCar?: boolean,
-}
+/* eslint-disable no-lone-blocks */
 
-const people: Person[] = [
-  {
-    name: 'Jonas',
-    surname: 'Jonaitis',
-    sex: 'male',
-    age: 26,
-    income: 1200,
-    married: false,
-    hasCar: false,
-  },
-  {
-    name: 'Severija',
-    surname: 'Piktutytė',
-    sex: 'female',
-    age: 26,
-    income: 1300,
-    married: false,
-    hasCar: true,
-  },
-  {
-    name: 'Valdas',
-    surname: 'Vilktorinas',
-    sex: 'male',
-    age: 16,
-    income: 0,
-    married: false,
-    hasCar: false,
-  },
-  {
-    name: 'Virginijus',
-    surname: 'Uostauskas',
-    sex: 'male',
-    age: 32,
-    income: 2400,
-    married: true,
-    hasCar: true,
-  },
-  {
-    name: 'Samanta',
-    surname: 'Uostauskienė',
-    sex: 'female',
-    age: 28,
-    income: 1200,
-    married: true,
-    hasCar: true,
-  },
-  {
-    name: 'Janina',
-    surname: 'Stalautinskienė',
-    sex: 'female',
-    age: 72,
-    income: 364,
-    married: false,
-    hasCar: false,
-  },
-];
-
-/*
-  Šių užduočių tikslas ne tik išspręsti užduotis, bet išmokti kurti tipus pagal jau esančius tipus
-  Pirmos 2 užduotys pateikiamos kaip pavyzdžiai kaip turėtų būt sprendžiami uždaviniai:
-    * Aprašome tipus
-    * Aprašome funkcijas
-    * (jeigu reikia aprašome naujus kintamuosius reikalingus sprendimui)
-    * Atliekame užduoties sprendimą
-    * Spausdiname sprendimo rezultatus
-  
-  Visas funkcijas ir kintamuosius reikia aprašyti tipais (net jei to ir nereikalauja TS compiler'is)
-    
-*/
-console.groupCollapsed('1. Sukurkite funkciją, kuri paverčia žmogaus objektą -> {name: string, surname: string} objektu. Naudojant šią funkciją performuokite visą žmonių masyvą');
+console.group('1. Dėklo (Stack) duomenų struktūros kūrimas');
 {
-  // Tipai:
-  type Identity = {
-    name: Person["name"],
-    surname: Person["surname"],
-  }
+  /*
+    Perskaitykite: https://runestone.academy/ns/books/published/pythonds/BasicDS/WhatisaStack.html
+  */
+  // ↓↓↓ klasė ↓↓↓
+  class Stack<T> {
+    private static elementNotEmpty = <Type>(el: Type | undefined): el is Type => el !== undefined;
 
-  // Funkcijos:
-  const personToIdentity = ({ name, surname }: Person): Identity => {
-    return { name, surname };
-  }
+    private index: number;
 
-  // Sprendimas:
-  const identities: Identity[] = people.map(personToIdentity);
+    [x: number]: T | undefined;
 
-  // Spausdinimas:
-  console.table(people);
-  console.table(identities);
-}
-console.groupEnd();
-
-console.groupCollapsed('2. Sukurkite funkciją, kuri paverčia žmogaus objektą -> {married: boolean, hasCar: boolean} objektu. Naudojant šią funkciją performuokite visą žmonių masyvą.');
-{
-  // type TaskProps = {
-  //   married: NonNullable<Person["married"]>,
-  //   hasCar: NonNullable<Person["hasCar"]>,
-  // }
-
-  type TaskProps = Pick<Required<Person>, "hasCar" | "married">;
-
-  const selectTaskProps = ({ married, hasCar }: Person): TaskProps => ({
-    married: Boolean(married),
-    hasCar: Boolean(hasCar),
-  });
-
-  const result: TaskProps[] = people.map(selectTaskProps);
-
-  console.table(people);
-  console.table(result);
-}
-console.groupEnd();
-
-console.groupCollapsed('3. Atspausdinkite objektus su visų žmonių vardais, pavardėm bei santuokos statusais');
-{
-  
-}
-console.groupEnd();
-
-console.groupCollapsed('4. Sukurtite masyvą su lytimis ir uždirbamu pinigų kiekiu, pagal pradinį žmonių masyvą');
-{
- type GenderMoney = {
-  sex: Person ['sex'],
-  income: Person ['income']
- }
- const SelectedGenderMoney = ({sex, income}: Person): GenderMoney => ({
-  sex, income
- });
- const result: GenderMoney[] = people.map(SelectedGenderMoney);
- console.log(result)
-}
-console.groupEnd();
-
-console.groupCollapsed('5. Sukurtite masyvą su vardais, pavardėmis ir lytimi, pagal pradinį žmonių masyvą');
-{
-  type GenderNameSurname = {
-    name: Person ['name'],
-    surname: Person ['surname'],
-    sex: Person ['sex']
-   }
-   const SelectedGenderNameSurname = ({sex, name, surname}: Person): GenderNameSurname => ({
-    sex, name, surname
-   });
-   const result: GenderNameSurname[] = people.map(SelectedGenderNameSurname);
-   console.log(result)}
-console.groupEnd();
-
-console.groupCollapsed('6. Atspausdinkite visus vyrus');
-{
-type GenderMale = Omit<Person, 'sex'> & {
-  sex:'male'
-}
-const GenderIsMale = ({sex}: Person): boolean => sex === 'male';
-
-const AllMales: GenderMale[] = people.filter(GenderIsMale) as GenderMale[];
-
-console.log(AllMales)
-}
-console.groupEnd();
-
-console.groupCollapsed('7. Atspausdinkite visas moteris');
-{
-  type GenderFemale = Omit<Person, 'sex'> & {
-    sex:'female'
-  }
-  const GenderIsFemale = ({sex}: Person): boolean => sex === 'female';
-  
-  const AllMales: GenderFemale[] = people.filter(GenderIsFemale) as GenderFemale[];
-  
-  console.log(AllMales)}
-console.groupEnd();
-
-console.groupCollapsed('8. Atspausdinkite žmonių vardus ir pavardes, kurie turi mašinas');
-{
-type peopleWithCar = {
-  name: Person ['name'],
-  surname: Person ['surname']
-}
-const personHasCar = ({ hasCar }: Person): boolean => Boolean(hasCar);
-
-const PersonIdentity = ({ name, surname }: Person): peopleWithCar => ({ name, surname})
-
-const IdentityReducer = ( result: peopleWithCar[], {hasCar, name, surname}: Person): peopleWithCar[] => {
-if  (hasCar === true){
-  result.push({ name, surname})
-} return result
-}
-const PeopleHaveCars: Person[] = people.filter(personHasCar);
-const identities: peopleWithCar[] = PeopleHaveCars.map(PersonIdentity);
-const identities2: peopleWithCar[] = people.reduce(IdentityReducer, []);
-
-console.log(identities)
-console.log(identities2)
-
-}
-console.groupEnd();
-
-console.groupCollapsed('9. Atspausdinkite žmones kurie yra susituokę');
-{
-  type MarriedPerson = Omit<Person, "married"> & {
-    married: true
-  };
-  const marriedReducer = (result: MarriedPerson[], person: Person): MarriedPerson[] => {
-    if (person.married === true) {
-      result.push(person as MarriedPerson)
-    };
-    return result;
-  }
-  const marriedPeople: MarriedPerson[] = people.reduce(marriedReducer, []);
-  console.log(marriedPeople);
-}
-console.groupEnd();
-
-console.groupCollapsed('10. Sukurkite objektą, kuriame būtų apskaičiuotas vairuojančių žmonių kiekis pagal lytį');
-{
-  type SortByGender = {
-    [key in Person ['sex']]?: number
-  }
-}
-  const SortDrivingPeopleByGender = (result: SortByGender, person: Person): SortByGender => {
-    if (!person.hasCar) {
-      return result;
-    } if (!result[person.sex]) result[person.sex] = 0;
-
-    result[person.sex] = result[person.sex] as number + 1
-
-    return result;
-  };
-  const GroupedPeopleByGender: SortByGender = people.reduce(SortDrivingPeopleByGender, {});
-
-  console.log(GroupedPeopleByGender)
-
-console.groupEnd();
-
-console.groupCollapsed('11. Performuokite žmonių masyvą, jog kiekvieno žmogaus savybė "income", taptų "salary"');
-{
-  type IncomeToSalary = Omit<Person, 'income'> & {
-    salary?: Person['income']
-  }
-  const ChangeToSalary = ({ income, ...person }: Person): IncomeToSalary => {
-    const result: IncomeToSalary = {...person };
-    if(income){
-      result.salary = income
+    constructor() {
+      this.index = -1;
     }
-    return result;
+
+    public get length() {
+      return this.index + 1;
+    }
+
+    public push(data: T): void {
+      this.index += 1;
+      this[this.index] = data;
+    }
+
+    public pop(): T | null {
+      const lastElement = this[this.index];
+
+      if (Stack.elementNotEmpty(lastElement)) {
+        delete this[this.index];
+        this.index -= 1;
+
+        return lastElement;
+      }
+
+      return null;
+    }
   }
-  const ConvertedMoney: IncomeToSalary[] = people.map(ChangeToSalary)
+  // ↑↑↑ klasė ↑↑↑
 
-  console.log(ConvertedMoney)
-}
-console.groupEnd();
+  // ↓↓↓ bendri kintamieji ↓↓↓
+  const numberStack = new Stack<number>();
+  const stringStack = new Stack<string>();
+  const numberArrayStack = new Stack<number[]>();
+  // ↑↑↑ bendri kintamieji ↑↑↑
 
-console.groupCollapsed('12. Suformuokite žmonių masyvą, kuriame nebūtų lyties, vardo ir pavardės');
-{
-  type RemoveNameSurnameGender = Omit<Person, 'name' | 'surname' | 'sex'>;
-
-  const createPerson = ({name, surname, sex, ...identity}: Person): RemoveNameSurnameGender => identity;
-
-  const createdPerson: RemoveNameSurnameGender[] = people.map(createPerson)
-
-  console.log(createdPerson)
-}
-console.groupEnd();
-
-console.groupCollapsed('13. Suformuokite žmonių masyvą, kuriame "name" ir "surname" savybės, būtų pakeistos "fullname" savybe');
-{
-  type FullName = Omit<Person, 'name' | 'surname'> & {
-    readonly fullname: string
+  // 5 min.
+  console.groupCollapsed('1.1. sukurkite konstruktorių, kuris nustatytų privačią savybę "index" į -1');
+  {
+    console.log({
+      numberStack,
+      stringStack,
+    });
   }
+  console.groupEnd();
 
-  const createFullName = ({name, surname, ...identity}: Person): FullName => ({...identity,
-  fullname: name + ' ' + surname
-  })
+  // 20 min
+  console.groupCollapsed('1.2. Sukurkite metodą "push", kuris pridėtų elementą į struktūros galą, t.y.: vienetu didesniu indeksu nei dabartinis index. Po pridėjimo index savybę padidinkite vienetu');
+  {
+    numberStack.push(1);
+    numberStack.push(7);
+    numberStack.push(12);
 
-  const FullNamePerson: FullName[] = people.map(createFullName)
+    stringStack.push('Labas');
+    stringStack.push('Vakaras');
+    stringStack.push('Poniai');
+    stringStack.push('ir');
+    stringStack.push('Ponios');
 
-  console.log(FullNamePerson)
+    numberArrayStack.push([1]);
+    numberArrayStack.push([2, 2, 2]);
+    numberArrayStack.push([3, 5, 4]);
+
+    console.log({
+      numberStack,
+      stringStack,
+      numberArrayStack,
+    });
+  }
+  console.groupEnd();
+
+  // 20 min
+  console.groupCollapsed('1.3. Sukurkite metodą "pop", kuris išimtų elementą iš struktūros galo. Po išėmimo index savybę sumažinkite vienetu');
+  {
+    console.log(numberStack.pop());
+    console.log(numberStack.pop());
+    console.log(numberStack.pop());
+    console.log(numberStack.pop());
+    console.log(numberStack.pop());
+    console.log(numberStack);
+
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack.pop());
+    console.log(stringStack);
+
+    const removedValue = numberArrayStack.pop();
+    console.log({ removedValue });
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack.pop());
+    console.log(numberArrayStack);
+  }
+  console.groupEnd();
+
+  // 10 min
+  console.groupCollapsed('1.4. Sukurkite get\'erį "length", kuris grąžintų elementų kiekį struktūroje');
+  {
+    console.log(numberStack.length);
+    numberStack.push(7);
+    numberStack.push(7);
+    console.log(numberStack.length);
+    numberStack.pop();
+    console.log(numberStack.length);
+  }
+  console.groupEnd();
 }
 console.groupEnd();

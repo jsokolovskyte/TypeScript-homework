@@ -1,7 +1,7 @@
 "use strict";
 const numbers = [1, 2, 3, 4, 5, 6, 7];
-const strings = ["pirmadienis", "antradienis", "trečiadienis", "ketvirtadienis", "penktadienis", "šeštadienis", "sekmadienis"];
-const booleans = [true, true, true, true, false];
+const strings = ["vienas", "du", "trys", "keturi", "penki", "sesi", "septyni"];
+const booleans = [true, true, true, true, false, false, false];
 console.group('1. Parašykite funkciją, kuri grąžina pirmą masyvo elementą.');
 {
     const firstOfArr = (arr) => {
