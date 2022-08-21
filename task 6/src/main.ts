@@ -1,231 +1,199 @@
-/* eslint-disable no-lone-blocks */
-/* eslint-disable no-empty */
+type PrimitiveType = string | number | boolean;
 
-// eslint-disable-next-line no-shadow, no-unused-vars
-enum HeightUnits {
-  // eslint-disable-next-line
-  CENTIMETERS = 'cm',
-  // eslint-disable-next-line
-  METERS = 'm',
-  // eslint-disable-next-line
-  INCHES = 'in'
+/*
+  Šių pratybų tikslas su išspręsti užduotis panaudojant bendrinius tipus. [1-6]
+  Funkcijų parametrai turi būti bendrinio tipo/ų, pagal kurios būtų suformuojami atsakymai
+  7 užduotis, skirta savarankiškai išmokti patikrinti tipus:
+  https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
+*/
+
+const numbers: number[] = [1, 2, 3, 4, 5, 6, 7];
+const strings: string[] = ["pirmadienis", "antradienis", "trečiadienis", "ketvirtadienis", "penktadienis", "šeštadienis", "sekmadienis"];
+const booleans: boolean[] = [true, true, true, true, false];
+
+console.group('1. Parašykite funkciją, kuri grąžina pirmą masyvo elementą.');
+{
+  const firstOfArr = <Type>(arr: Type[]): Type | undefined => {
+    return arr[0];
+  }
+
+  console.log(firstOfArr(numbers));
+  console.log({ strings, result: firstOfArr(strings) });
+  console.log({ booleans, result: firstOfArr(booleans) });
 }
+console.groupEnd();
 
-enum WeightUnits {
-  KG = 'kg',
-  LBS = 'lbs',
+console.group('2. Parašykite funkciją, kuri grąžina paskutinį masyvo elementą.');
+{
+  const lasttOfArr = <Type>(arr: Type[]): Type | undefined => {
+    return arr[arr.length - 1];
+  }
+
+  console.log(lasttOfArr(numbers));
+  console.log({ strings, result: lasttOfArr(strings) });
+  console.log({ booleans, result: lasttOfArr(booleans) });
 }
+console.groupEnd();
 
-const capitalize = (word: string): string => {
-  const words = word.trim().split(' ');
-  const capitalizedWords = words.map((w) => w[0].toUpperCase() + w.slice(1));
+console.group('3. Parašykite funkciją, kuri grąžina vienarūšių primityvių reikšmių masyvo kopiją');
+{
+  const copyOfArr = <Type extends PrimitiveType>(arr: Type[]): Type[] => {
+    const copiedArr: Type[] = arr.map(x => x);
 
-  return capitalizedWords.join(' ');
-};
+    return copiedArr;
+  }
 
-class Person {
-  public static heightUnits: HeightUnits = HeightUnits.CENTIMETERS;
+  console.log(copyOfArr<number>(numbers));
+  console.log({ strings, result: copyOfArr<string>(strings) });
+  console.log({ booleans, result: copyOfArr<boolean>(booleans) });
+}
+console.groupEnd();
 
-  public static weighttUnits: WeightUnits = WeightUnits.KG;
+console.group('4. Parašykite funkciją,  kuri pirmu parametru priima string | number | boolen, grąžina to tipo masyvą su perduota reikšme tiek kartų, kiek nurodyta antru parametru');
+{
+  type ArgumentSample = [PrimitiveType, number];
 
-  private privateName!: string;
+  const solution = <T extends PrimitiveType>(value: T, count: number): Array<T> => {
+    return Array.from(new Array(count)).map(_ => value);
+  }
 
-  private surname!: string;
+  const dataSamples: ArgumentSample[] = [
+    ['a', 2],
+    [77, 4],
+    [true, 1],
+  ];
 
-  private age!: number;
+  dataSamples.forEach(
+    (args) => console.log(
+      `solution(${args.join(', ')}):`,
+      solution(...args)
+    )
+  );
+}
+console.groupEnd();
 
-  private height!: number;
+console.group('5. Parašykite funkciją, kuri sujungia tokių pat tipų masyvus į vieną masyvą');
+{
+  type ArgumentSample<T> = [T[], T[]];
 
-  private weight!: number;
-  static weightUnits: any;
+  const SumArr = <Type>(arr1: Type[], arr2: Type[]): Type[] => {
+    return [...arr1, ...arr2];
+  }
 
+  const args1: ArgumentSample<number> = [[1, 2, 3], [4, 5]];
+  const args2: ArgumentSample<string> = [['new', 'phone'], ['who', 'dis']];
+  const args3: ArgumentSample<boolean> = [[true], [false, false]];
 
-  public constructor(
+  console.log(SumArr(...args1));
+  console.log({ args: args2, result: SumArr(...args2) });
+  console.log({ args: args3, result: SumArr(...args3) });
+}
+console.groupEnd();
+
+console.group('6. Parašykite funkciją, kuri priimtų bet kokią reikšmę ir grąžintų objektą su savybėmis-funkcijomis "setValue" - reikšmei nustatyti ir "getValue" tai reikšmei gauti. Funkcijai perduota reikšmė neturi būti pasiekiama tiesiogiai.');
+{
+  type IncapsulatedValueObject<Type> = {
+    setValue: (newValue: Type) => void,
+    getValue: () => Type
+  };
+
+  const solution = <Type>(initialValue: Type): IncapsulatedValueObject<Type> => {
+    let value: Type = initialValue;
+
+    return {
+      setValue: (newValue) => value = newValue,
+      getValue: () => value,
+    }
+  }
+  const value1: number = 7;
+  const value2: Array<string> = ['Salomeja', 'Nemunas'];
+  const value3: { name: string, surname: string } = { name: 'Balys', surname: 'Plaukas' };
+
+  const obj1 = solution(value1);
+  const obj2 = solution(value2);
+  const obj3 = solution(value3);
+
+  console.log({
+    value1: obj1.getValue(),
+    value2: obj2.getValue(),
+    value3: obj3.getValue(),
+  })
+  obj1.setValue(9);
+  obj2.setValue(['Zemaite', 'Aukstaite']);
+  obj3.setValue({ name: 'Pakaitalas', surname: 'Fuflo' });
+}
+console.groupEnd();
+
+console.group(`
+  7. Turite 2 tipus: Student ir Worker kurie pasižymi bendrais bruožais Person. 
+  Parašykite 2 funkcijas <isStudent> ir <isWorker> skirtas atpažinti koks objektas buvo perduotas.
+  Sukūrę tokias funkcijas iteruokite per žmonių masyvą, sugrupuodami elementus pagal tipą`
+);
+// Oficialus būdas patikrinti tipą
+// https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
+{
+  type Person = {
     name: string,
     surname: string,
-    age: number,
-    height: number,
-    weight: number,
-    heightUnits?: HeightUnits,
-    weightUnits?: WeightUnits,
-  ) {
-    this.setName(name);
-    this.setSurname(surname);
-    this.setAge(age);
-    this.setHeight(height, heightUnits);
-    this.setWeight(weight, weightUnits);
+  };
+
+  type Student = Person & {
+    university: string,
+    course: number,
+  };
+
+  type Worker = Person & {
+    avgMonthlyPay: number,
+  };
+
+  type GroupedPeople = {
+    people: Person[],
+    students: Student[],
+    workers: Worker[],
+  };
+
+  const isWorker = (person: Person): person is Worker => {
+    return (person as Worker).avgMonthlyPay !== undefined;
   }
 
-  public setName(name: string) {
-    if (name === '') throw new Error('Negali būti tuščias');
-    if (name.length < 2) throw new Error('Vardas turi būti bent iš 2 raidžių');
+  const isStudent = (person: Person): person is Student => {
+    const student = person as Student;
 
-    this.privateName = capitalize(name);
+    return student.university !== undefined && student.course !== undefined;
   }
 
-  public setSurname(surname: string) {
-    if (surname === '') throw new Error('Negali būti tuščias');
-    if (surname.length < 2) throw new Error('Pavardė turi būti bent iš 2 raidžių');
+  const solution = (people: Person[]): GroupedPeople => {
+    const groupedPeople = people.reduce<GroupedPeople>((prevGroupedPeople, person) => {
+      const newGroupedPeople = { ...prevGroupedPeople };
 
-    this.surname = capitalize(surname);
+      if (isWorker(person)) newGroupedPeople.workers.push(person);
+      if (isStudent(person)) newGroupedPeople.students.push(person);
+      else newGroupedPeople.people.push(person);
+
+      return newGroupedPeople;
+    }, {
+      people: [],
+      students: [],
+      workers: [],
+    });
+
+    return groupedPeople;
   }
 
-  public setAge(age: number) {
-    if (age % 1 !== 0) throw new Error('Amžius turi būti sveikas skaičius');
-    if (age < 1) throw new Error('Amžius negali būti mažesnis nei 1');
-    if (age > 150) throw new Error('Amžius negali būti didesnis už 150');
+  const people: (Person | Student | Worker)[] = [
+    { name: 'Atstovė', surname: 'Galtokaitė', university: 'VU', course: 2 },
+    { name: 'Kurpius', surname: 'Medainis' },
+    { name: 'Varnas', surname: 'Akilaitis', avgMonthlyPay: 2000 },
+    { name: 'Ferodijus', surname: 'Cilcius' },
+    { name: 'Sobora', surname: 'Kupolaityė', avgMonthlyPay: 1000 },
+    { name: 'Zubrius', surname: 'Sulindauskas', university: 'VU', course: 2 },
+    { name: 'Šidelė', surname: 'Gyslovienė', avgMonthlyPay: 1500 },
+    { name: 'Užuodauskas', surname: 'Perrašimauskas', university: 'VGTU', course: 1 },
+  ];
 
-    this.age = age;
-  }
+  // (Person | Student | Worker)[] === Person[] ????
+  // https://www.javatpoint.com/typescript-duck-typing
+  const groupedPeople = solution(people);
 
-  public setHeight(height: number, units: HeightUnits = HeightUnits.CENTIMETERS) {
-    switch (units) {
-      case HeightUnits.CENTIMETERS: this.height = height; break;
-      case HeightUnits.METERS: this.height = height * 100; break;
-      case HeightUnits.INCHES: this.height = height * 2.54; break;
-      default: break;
-    }
-  }
-
-  public setWeight(weight: number, units?: WeightUnits): void {
-    switch (units) {
-      case WeightUnits.KG: this.weight = weight; break;
-      case WeightUnits.LBS: this.weight = weight / 2.20462262; break;
-      default: this.weight = weight;
-    }
-  }
-
-  public getFullname() {
-    return `${this.privateName} ${this.surname}`;
-  }
-
-  public getAge() {
-    return this.age;
-  }
-
-  public getHeight() {
-    switch (Person.heightUnits) {
-      case HeightUnits.CENTIMETERS: return this.height;
-      case HeightUnits.METERS: return this.height / 100;
-      case HeightUnits.INCHES: return this.height / 2.54;
-      default: return this.height;
-    }
-  }
-
-  public getWeight(): number {
-    if (this.weight === undefined) return 0;
-
-    let value;
-    switch (Person.weightUnits) {
-      case WeightUnits.KG: value = this.weight; break;
-      case WeightUnits.LBS: value = this.weight * 2.20462262; break;
-      default: value = this.weight;
-    }
-
-    return Math.round(value * 10) / 10;
-  }
-
-  public toString(): string {
-    let formattedPerson = `${this.privateName} ${this.surname}\n`;
-    formattedPerson += `\theight: ${this.getHeight()} ${Person.heightUnits}\n`;
-    formattedPerson += `\tweight: ${this.getWeight()}   ${Person.weightUnits}\n`;
-
-    return formattedPerson;
-  }
-}
-
-const people: Person[] = [
-  new Person('Liudvikas', 'XVIII', 31, 190, 70),
-  new Person('varaloja', 'karksė barsė', 35, 1.7, 150, HeightUnits.METERS, WeightUnits.LBS),
-  new Person('Ana maria', 'Laikauskaitė', 39, 70, 125, HeightUnits.INCHES, WeightUnits.LBS),
-];
-
-console.groupCollapsed('1. Sukurkite Person klasei savybes "name" ir "surname". Kiekvienai iš jų sukurkite setterius, ir bendrą getterį fullname');
-{
-  const fullnames: string[] = people.map((p) => p.getFullname());
-
-  console.log(fullnames);
-}
-console.groupEnd();
-
-console.groupCollapsed('2. Sukurkite Person klasei savybę "age". Inkapsuliuokite šią savybę taip, jog reikšmė galėtų būti tik sveiki skaičiai nuo 1 iki 150');
-{
-  const ages = people.map((p) => p.getAge());
-  console.log(ages);
-}
-console.groupEnd();
-
-console.group('3. Sukurkite Person klasei savybę "height" kurios vertė būtų saugoma centimetrais. Sukurkite šiai savybei setterį, kuris pirmu parametru priimtų reikšmę, o antru parametru priimtų matavimo vienetus: "cm" | "m" | "in". Jeigu antras parametras nėra perduotas, numatytas(default) matavimo vienetas turi būti cm. Getteris turi grąžinti reikšmę centimetrais.');
-{
-  const heights = people.map((p) => p.getHeight());
-  console.log(heights);
-}
-console.groupEnd();
-
-console.group('4. Sukurkite Person klasei statinę savybę "heightUnits". Jos tipas turi būti išvardinimas(enum), kurio pasirinkimai yra: "cm", "m", "in". Numatytoji(default) "heightUnits" reikšmė turi būti centimetrai');
-{
-  Person.heightUnits = HeightUnits.METERS;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.METERS);
-  console.log({ 'Person.heightUnits': Person.heightUnits });
-  Person.heightUnits = HeightUnits.INCHES;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.INCHES);
-  console.log({ 'Person.heightUnits': Person.heightUnits });
-  Person.heightUnits = HeightUnits.CENTIMETERS;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.CENTIMETERS);
-  console.log({ 'Person.heightUnits': Person.heightUnits });
-}
-console.groupEnd();
-
-console.group('5. "height" setterio antram parametrui pakeiskite sąjungos tipą į [4.] užduotyje sukurtą išvardinimą(enum). Priderinkite pavyzdžius ir metodą.');
-
-console.group('6. "height" geteriui sukurkite logiką, jog jis grąžintų matavimo vienetus, pagal statinės savybės "heightUnits" reikšmę.');
-{
-  Person.heightUnits = HeightUnits.METERS;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.METERS);
-  console.log(people.map((p) => p.getHeight()));
-  Person.heightUnits = HeightUnits.INCHES;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.INCHES);
-  console.log(people.map((p) => p.getHeight()));
-  Person.heightUnits = HeightUnits.CENTIMETERS;
-  console.log('Matavimo vienetai pakeisti į:', HeightUnits.CENTIMETERS);
-  console.log(people.map((p) => p.getHeight()));
-}
-console.groupEnd();
-
-console.group('7. Analogiškai pagal [4.]-[6.] punktus sukurkite savybę weight su statiniu išvardinimu "weightUnits", kurio pasirinkimai turi būti: "KG", "LBS"');
-{
-  const weights = people.map((p) => p.getWeight());
-  console.log(weights);
-
-  Person.weightUnits = WeightUnits.KG;
-  console.log('Matavimo vienetai pakeisti į:', WeightUnits.KG);
-  console.log(people.map((p) => p.getWeight()));
-  Person.weightUnits = WeightUnits.LBS;
-  console.log('Matavimo vienetai pakeisti į:', WeightUnits.LBS);
-  console.log(people.map((p) => p.getWeight()));
-}
-console.groupEnd();
-
-console.group('8. Sukurkite klasei Person metodą "toString". Kuris paverstų žmogaus savybes gražiu formatu: vardas ir pavardė pirmoje eilutėje, o "height" ir "weight" savybės atskirose eilutėse, atitrauktos nuo kairio krašto per "tab" simbolį, ir su matavimo vienetais(kurie išsaugoti) statinėse Person klasės savybėse');
-{
-
-  const person1: Person[] = [
-    new Person('Liudvikas', 'Saule', 31, 190, 70),
-];
-
-const person2: Person[] = [
-  new Person('Morkius', 'Ridikius', 61, 150, 65),
-];
-
-  Person.heightUnits = HeightUnits.METERS;
-  Person.weightUnits = WeightUnits.KG;
-  console.log('European Standard');
-  console.log(person1.toString());
-  console.log(person2.toString());
-
-  Person.heightUnits = HeightUnits.INCHES;
-  Person.weightUnits = WeightUnits.LBS;
-  console.log('American Standard');
-  console.log(person1.toString());
-  console.log(person2.toString());
+  console.log(groupedPeople);
 }
